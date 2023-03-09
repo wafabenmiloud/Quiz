@@ -1,0 +1,113 @@
+.main{
+    display: flex;
+    flex-direction: row;
+    padding: 3rem;
+    margin: 2rem;
+
+    
+}
+.main .row{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    justify-content: center;
+}
+
+.main h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    line-height: 1;
+    margin-bottom: 20px;
+    
+    color: #FF44B6;
+  }
+  .main ul{
+    margin-left: 2rem;
+  }
+  .main li {
+    color: #fff;
+    font-size: 1.2rem;
+    letter-spacing: 0.8px;
+    line-height: 1.5em;
+    width: 96%;
+  }
+  .main .userid{
+    width: 50%;
+    padding: 1rem;
+    margin: 2rem;
+  }
+  .main .button {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 1rem;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+  }
+  .main .button svg {
+    font-size: 25px;
+    margin-left: 10px;
+    transition: 0.3s ease-in-out;
+    line-height: 1;
+    color: #FF44B6;
+  }
+  .main .button:hover svg {
+    margin-left: 25px;
+  }
+  .main img {
+    animation: updown 3s linear infinite;
+    width: 100%;
+  }
+  @keyframes updown {
+      0% {
+          transform: translateY(-20px);
+      }
+      50% {
+          transform: translateY(20px);
+      }
+      100% {
+          transform: translateY(-20px);
+      }
+  }
+  @media (max-width:700px) {
+    .main{
+     
+      padding: 2rem;
+      margin: 1rem;
+  
+      
+  }
+  .main .row{
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .main h1 {
+      font-size: 1.5rem;
+         }
+    .main ul{
+      margin-left: 0.7rem;
+    }
+    .main li {
+      font-size: 1rem;
+    }
+    .main .userid{
+      width: 70%;
+      padding: 0.7rem;
+    }
+    .main .button {
+     justify-content: end;
+    }
+    .main .button svg {
+      font-size: 20px;
+    
+    }
+    .main .button:hover svg {
+      margin-left: 20px;
+    }
+    .main img {
+      width: 40%;
+    }
+  }
