@@ -11,7 +11,7 @@ const app = express()
 
 /** app middlewares */
 app.use(morgan('tiny'));
-app.use(cors({credentials: true, origin: ['http://localhost:3000','https://quiz-three-ruby.vercel.app']}));
+app.use(cors({credentials: true, origin: ['http://localhost:3000','https://quiz-p9dl.onrender.com/']}));
 app.use(express.json());
 
 
