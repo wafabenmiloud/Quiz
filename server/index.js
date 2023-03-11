@@ -11,8 +11,12 @@ const app = express()
 
 /** app middlewares */
 app.use(morgan('tiny'));
-app.use(cors({credentials: true, origin: ['http://localhost:3000','https://quiz-p9dl.onrender.com/']}));
-app.use(express.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://quiz-p9dl.onrender.com');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
+  app.use(express.json());
 
 
 /** appliation port */

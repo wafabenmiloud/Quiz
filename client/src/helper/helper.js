@@ -23,19 +23,13 @@ export function CheckUserExist({ children }){
 /** get server data */
 export async function getServerData(url, callback){
     
-    const data = await (await axios.get(url,
-       { headers: {
-            'Access-Control-Allow-Origin': 'https://quiz-p9dl.onrender.com'
-          }}
-        ))?.data;
+    const data = await (await axios.get(url))?.data;
     return callback ? callback(data) : data;
 }
 
 
 /** post server data */
 export async function postServerData(url, result, callback){
-    const data = await (await axios.post(url, result,  { headers: {
-        'Access-Control-Allow-Origin': 'https://quiz-p9dl.onrender.com'
-      }}))?.data;
+    const data = await (await axios.post(url, result))?.data;
     return callback ? callback(data) : data;
 } 
