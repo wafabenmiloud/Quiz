@@ -1,13 +1,12 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import Questions from './Questions'
 import "./Quiz.css";
-import { ArrowRight,ArrowLeft } from "react-bootstrap-icons";
+import { ArrowRight, ArrowLeft } from "react-bootstrap-icons";
 import headerImg from "../assets/bg.svg";
 
 import { MoveNextQuestion, MovePrevQuestion } from '../hooks/FetchQuestion';
 import { PushAnswer } from '../hooks/setResult';
 
-/** redux store import */
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, Navigate } from 'react-router-dom'
 
@@ -19,59 +18,62 @@ export default function Quiz() {
     const { queue, trace } = useSelector(state => state.questions);
     const dispatch = useDispatch()
 
-    /** next button event handler */
-    function onNext(){
-        if(trace < queue.length){
-            /** increase the trace value by one using MoveNextAction */
+    function onNext() {
+        if (trace < queue.length) {
             dispatch(MoveNextQuestion());
-
-            /** insert a new result in the array.  */
-            if(result.length <= trace){
+            if (result.length <= trace) {
                 dispatch(PushAnswer(check))
             }
         }
-     
-        /** reset the value of the checked variable */
         setChecked(undefined)
     }
 
-    /** Prev button event handler */
-    function onPrev(){
-        if(trace > 0){
-            /** decrease the trace value by one using MovePrevQuestion */
+    function onPrev() {
+        if (trace > 0) {
             dispatch(MovePrevQuestion());
         }
     }
 
-    function onChecked(check){
+    function onChecked(check) {
         setChecked(check)
     }
 
-    /** finished exam after the last question */
-    if(result.length && result.length >= queue.length){
-        return <Navigate to={'/result'} replace={true}></Navigate>
+    if (result.length && result.length >= queue.length) {
+        return <Navigate to={'/result'} replace={true} />
     }
 
-  return (
-    <>
-      <nav>
-        <Link to="/">
-        <img src={headerImg} alt="Header Img" />
+    const totalQ   = queue.length || 1;
+    const progress = Math.round((trace / totalQ) * 100);
 
-        </Link>
-    </nav>
-    <div className='quiz'>
-           
+    return (
+        <>
+            <nav>
+                <Link to="/">
+                    <img src={headerImg} alt="Home" />
+                </Link>
+            </nav>
 
-        {/* display questions */}
-        <Questions onChecked={onChecked} />
+            <div className="quiz-progress">
+                <div className="progress-header">
+                    <span className="q-counter">Question {trace + 1} of {queue.length || '—'}</span>
+                    <span className="q-counter">{progress}%</span>
+                </div>
+                <div className="progress-track">
+                    <div className="progress-fill" style={{ width: `${progress}%` }} />
+                </div>
+            </div>
 
-        <div className='grid'>
-            { trace > 0 ? <button className='prev' onClick={onPrev}><ArrowLeft size={35} /> Prev </button> : <div></div>}
-            <button className='next' onClick={onNext}> Next <ArrowRight size={35} /></button>
-        </div>
-    </div>
-    </>
-  
-  )
+            <div className='quiz'>
+                <Questions onChecked={onChecked} />
+
+                <div className='grid'>
+                    {trace > 0
+                        ? <button className='prev' onClick={onPrev}><ArrowLeft size={17} /> Prev</button>
+                        : <div />
+                    }
+                    <button className='next' onClick={onNext}>Next <ArrowRight size={17} /></button>
+                </div>
+            </div>
+        </>
+    )
 }

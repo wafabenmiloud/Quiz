@@ -1,67 +1,172 @@
-.container{
-    margin: 2rem;
-}
-.end{
-    display: flex;
-    margin-top: 3rem;
-    justify-content: center;}
-   
-    .btn {
-        color: white;
-      font-size: 16px;
-      font-weight: 200;
-      letter-spacing: 1px;
-      padding: 13px 20px 13px;
-      outline: 0;
-      border: 1px solid black;
-      cursor: pointer;
-      position: relative;
-      background-color: #FF44B6;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-    }
-    
-    .btn:after {
-      content: "";
-      background-color: white;
-      width: 100%;
-      z-index: -1;
-      position: absolute;
-      height: 100%;
-      top: 7px;
-      left: 7px;
-      transition: 0.2s;
-    }
-    
-    .btn:hover:after {
-      top: 0px;
-      left: 0px;
-    }
-
-
-
-.flex-center{
-    display: flex;
-    justify-content: center;    
-    flex-direction: column;
-    padding: 1rem;
-    gap: 1em;
+/* ═══════════════════════════════════════════
+   Result Page
+═══════════════════════════════════════════ */
+.result-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
 }
 
-.container .flex{
-    display: flex;
-    justify-content: space-around;
-    
+/* ── Main card ── */
+.result-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: center;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
 }
 
-.container .flex span {
-    font-size: 1.4em;
-    color: #cecece;
+/* ── Emoji ── */
+.result-emoji {
+  font-size: 68px;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px currentColor);
 }
 
-.container .flex span.achive {
-    font-weight: bold;
-    color: red;
-    color: green;
+/* ── Element badge ── */
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border-radius: var(--r-xl);
+  padding: 5px 14px;
+  border: 1.5px solid;
+  /* color, border-color, background set via inline style in JS */
+}
+
+/* ── Sign name ── */
+.result-sign {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.3px;
+  margin-top: -2px;
+}
+
+/* ── Traits description ── */
+.result-traits {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  line-height: 1.8;
+  max-width: 390px;
+}
+
+/* ── Thin divider ── */
+.result-divider {
+  width: 36px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--border);
+  margin: 0.1rem 0;
+}
+
+/* ── Stat grid ── */
+.result-stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.result-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.stat-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.stat-value.small { font-size: 0.82rem; }
+
+/* ── Tally pills ── */
+.result-tally {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.tally-pill {
+  padding: 6px 14px;
+  border-radius: var(--r-xl);
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--surface-hover);
+  color: var(--text-2);
+  border: 1.5px solid var(--border);
+  transition: background var(--dur) var(--ease);
+  letter-spacing: 0.2px;
+}
+
+.tally-pill.dominant {
+  color: #fff;
+  border-color: transparent;
+  /* background set via inline style */
+}
+
+/* ── CTA button ── */
+.result-cta { margin-top: 0.4rem; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 34px;
+  border-radius: var(--r-xl);
+  background: var(--gradient);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition:
+    transform   var(--dur) var(--ease),
+    box-shadow  var(--dur) var(--ease);
+  box-shadow: 0 4px 16px rgba(201,68,232,0.35);
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(201,68,232,0.52);
+  color: #fff;
+}
+
+.btn:active { transform: translateY(0); }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .result-card  { padding: 1.75rem 1.1rem; }
+  .result-emoji { font-size: 52px; }
+  .result-stats { gap: 1.4rem; }
 }

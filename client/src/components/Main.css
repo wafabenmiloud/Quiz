@@ -1,113 +1,208 @@
-.main{
-    display: flex;
-    flex-direction: row;
-    padding: 3rem;
-    margin: 2rem;
-
-    
-}
-.main .row{
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    align-items: center;
-    justify-content: center;
+/* ═══════════════════════════════════════════
+   Landing Page
+═══════════════════════════════════════════ */
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 5rem 2rem 3rem;
 }
 
+.main .row {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Tag badge ───────────────────────────────── */
+.main .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-xl);
+  padding: 5px 14px;
+  width: fit-content;
+  margin-bottom: 1.2rem;
+}
+
+/* ── Heading ─────────────────────────────────── */
 .main h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    line-height: 1;
-    margin-bottom: 20px;
-    
-    color: #FF44B6;
+  font-size: clamp(1.9rem, 3.8vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.18;
+  color: var(--text-1);
+  margin-bottom: 1rem;
+}
+
+.main .gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Typewriter tagline ──────────────────────── */
+.main .tagline {
+  font-size: 0.95rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  min-height: 1.6em;
+  margin-bottom: 1.4rem;
+}
+
+.main .wrap {
+  color: var(--text-2);
+}
+
+/* ── Steps list ──────────────────────────────── */
+.main .steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 2rem;
+}
+
+.main .steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.main .steps li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ── Name input ──────────────────────────────── */
+.main .userid {
+  width: 100%;
+  max-width: 360px;
+  padding: 13px 20px;
+  border-radius: var(--r-xl);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 0.93rem;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow   var(--dur) var(--ease),
+    background   var(--dur) var(--ease);
+  backdrop-filter: blur(8px);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.main .userid::placeholder { color: var(--text-3); }
+
+.main .userid:focus {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+
+/* ── CTA Button ──────────────────────────────── */
+.main .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 26px;
+  border-radius: var(--r-xl);
+  background: var(--gradient);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.93rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition:
+    transform    var(--dur) var(--ease),
+    box-shadow   var(--dur) var(--ease);
+  box-shadow: 0 4px 20px rgba(201,68,232,0.38);
+}
+
+.main .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(201,68,232,0.55);
+}
+
+.main .button:active { transform: translateY(0); }
+
+.main .button svg {
+  flex-shrink: 0;
+  transition: transform var(--dur) var(--ease);
+}
+
+.main .button:hover svg { transform: translateX(4px); }
+
+/* ── Illustration column ─────────────────────── */
+.main .col-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main .col-visual::before {
+  content: '';
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,68,232,0.24) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.main img {
+  position: relative;
+  z-index: 1;
+  width: 88%;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(-14px); }
+  50%       { transform: translateY(14px);  }
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 900px) {
+  .main .row {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
   }
-  .main ul{
-    margin-left: 2rem;
-  }
-  .main li {
-    color: #fff;
-    font-size: 1.2rem;
-    letter-spacing: 0.8px;
-    line-height: 1.5em;
-    width: 96%;
-  }
-  .main .userid{
-    width: 50%;
-    padding: 1rem;
-    margin: 2rem;
-  }
-  .main .button {
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.5rem;
-    margin: 1rem;
-    letter-spacing: 0.8px;
-    display: flex;
-    align-items: center;
-  }
-  .main .button svg {
-    font-size: 25px;
-    margin-left: 10px;
-    transition: 0.3s ease-in-out;
-    line-height: 1;
-    color: #FF44B6;
-  }
-  .main .button:hover svg {
-    margin-left: 25px;
-  }
-  .main img {
-    animation: updown 3s linear infinite;
-    width: 100%;
-  }
-  @keyframes updown {
-      0% {
-          transform: translateY(-20px);
-      }
-      50% {
-          transform: translateY(20px);
-      }
-      100% {
-          transform: translateY(-20px);
-      }
-  }
-  @media (max-width:700px) {
-    .main{
-     
-      padding: 2rem;
-      margin: 1rem;
-  
-      
-  }
-  .main .row{
-      display: flex;
-      flex-direction: column;
-  }
-  
-  .main h1 {
-      font-size: 1.5rem;
-         }
-    .main ul{
-      margin-left: 0.7rem;
-    }
-    .main li {
-      font-size: 1rem;
-    }
-    .main .userid{
-      width: 70%;
-      padding: 0.7rem;
-    }
-    .main .button {
-     justify-content: end;
-    }
-    .main .button svg {
-      font-size: 20px;
-    
-    }
-    .main .button:hover svg {
-      margin-left: 20px;
-    }
-    .main img {
-      width: 40%;
-    }
-  }
+  .main .tag         { margin: 0 auto 1.2rem; }
+  .main .steps li    { justify-content: center; }
+  .main .userid      { max-width: 100%; }
+  .main .button      { margin: 0 auto; }
+  .main .col-visual  { order: -1; }
+  .main .col-visual::before { width: 45%; }
+  .main img          { width: 50%; margin: 0 auto; }
+}
+
+@media (max-width: 500px) {
+  .main { padding: 4.5rem 1.25rem 2rem; }
+  .main img { width: 66%; }
+  .main h1  { font-size: 1.75rem; }
+}

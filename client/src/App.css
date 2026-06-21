@@ -1,80 +1,80 @@
-@font-face {
-	font-family: Centra;
-	src: url('./assets/font/CentraNo2-Bold.ttf');
-	font-weight: 700;
-}
-@font-face {
-	font-family: Centra;
-	src: url('./assets/font/CentraNo2-Medium.ttf');
-	font-weight: 500;
-}
-@font-face {
-	font-family: Centra;
-	src: url('./assets/font/CentraNo2-Book.ttf');
-	font-weight: 400;
+/* ── Fonts ─────────────────────────────────────────────────── */
+@font-face { font-family: Centra; src: url('./assets/font/CentraNo2-Bold.ttf');   font-weight: 700; }
+@font-face { font-family: Centra; src: url('./assets/font/CentraNo2-Medium.ttf'); font-weight: 500; }
+@font-face { font-family: Centra; src: url('./assets/font/CentraNo2-Book.ttf');   font-weight: 400; }
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg:              #09090f;
+  --surface:         rgba(255,255,255,0.045);
+  --surface-hover:   rgba(255,255,255,0.08);
+  --surface-active:  rgba(201,68,232,0.12);
+  --border:          rgba(255,255,255,0.09);
+  --border-accent:   rgba(201,68,232,0.5);
+  --accent:          #c944e8;
+  --accent-2:        #7c3aed;
+  --accent-dim:      rgba(201,68,232,0.15);
+  --gradient:        linear-gradient(135deg, #c944e8, #7c3aed);
+  --text-1:          #f0f0f8;
+  --text-2:          #8e8eae;
+  --text-3:          #4e4e68;
+  --r-sm:            8px;
+  --r-md:            16px;
+  --r-lg:            24px;
+  --r-xl:            999px;
+  --ease:            cubic-bezier(0.4, 0, 0.2, 1);
+  --dur:             0.22s;
 }
 
-
-/*//////////////////////////////////////*/
-
-/************ Default Css ************/
-* {
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 75px;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  font-weight: 400;
+  font-family: 'Centra', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -5%,  rgba(124,58,237,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, rgba(201,68,232,0.12) 0%, transparent 55%);
+  color: var(--text-1);
+  min-height: 100vh;
   overflow-x: hidden;
-  position: relative;
-  background-image: url('./assets/img/banner-bg.png');
-  background-color: black;
-
-  font-family: 'Centra', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  padding: 0;
-  line-height: normal;
+h1, h2, h3, h4, h5, h6 { line-height: 1.15; }
+p, a, li, button, ul    { text-decoration: none; line-height: normal; }
+a:hover                 { text-decoration: none; }
+img                     { max-width: 100%; height: auto; display: block; }
+button                  { border: 0; background: transparent; cursor: pointer; }
+input:focus             { outline: none; }
+
+/* ── Utilities ─────────────────────────────────────────────── */
+.text-light { color: var(--text-1); }
+.bold       { font-weight: 700; }
+
+/* ── Entrance animations (for react-on-screen) ─────────────── */
+.animate__animated { animation-duration: 0.65s; animation-fill-mode: both; }
+
+.animate__fadeIn {
+  animation-name: anim-fadeIn;
+}
+@keyframes anim-fadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-p, a, li, button, ul {
-  margin: 0;
-  padding: 0;
-  line-height: normal;
-  text-decoration: none;
+.animate__zoomIn {
+  animation-name: anim-zoomIn;
+  animation-delay: 0.1s;
 }
-
-a:hover {
-  text-decoration: none;
+@keyframes anim-zoomIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1);    }
 }
-
-img {
-  width: 100%;
-  height: auto;
-}
-
-button {
-  border: 0;
-  background-color: transparent;
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-}
-
-@media (min-width:1700px) {
-	main .container {
-		max-width: 100%;
-		padding: 0 150px;
-	}
-}
-
-

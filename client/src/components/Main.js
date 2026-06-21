@@ -12,22 +12,17 @@ export default function Main() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [text, setText] = useState("");
   const [delta, setDelta] = useState(300 - Math.random() * 100);
-  const [index, setIndex] = useState(1);
   const toRotate = [
-    " Get ready for your next programming interview with our quiz app!",
-    " Become a programming interview pro with our quiz app",
-    " Are you ready to tackle challenging questions?",
+    "Fire, Earth, Air, or Water?",
+    "12 questions. One cosmic truth.",
+    "Discover your elemental identity.",
   ];
-  const period = 1000;
+  const period = 1800;
 
   useEffect(() => {
-    let ticker = setInterval(() => {
-      tick();
-    }, delta);
-
-    return () => {
-      clearInterval(ticker);
-    };
+    let ticker = setInterval(() => { tick(); }, delta);
+    return () => { clearInterval(ticker); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   const tick = () => {
@@ -40,22 +35,19 @@ export default function Main() {
     setText(updatedText);
 
     if (isDeleting) {
-      setDelta((prevDelta) => prevDelta / 2);
+      setDelta(prev => prev / 2);
     }
 
     if (!isDeleting && updatedText === fullText) {
       setIsDeleting(true);
-      setIndex((prevIndex) => prevIndex - 1);
       setDelta(period);
     } else if (isDeleting && updatedText === "") {
       setIsDeleting(false);
       setLoopNum(loopNum + 1);
-      setIndex(1);
       setDelta(500);
-    } else {
-      setIndex((prevIndex) => prevIndex + 1);
     }
   };
+
   const inputRef = useRef();
   const dispatch = useDispatch();
 
@@ -69,58 +61,57 @@ export default function Main() {
   return (
     <div className="main">
       <div className="row">
+
+        {/* ── Left: content ── */}
         <div>
           <TrackVisibility>
             {({ isVisible }) => (
-              <div
-                className={isVisible ? "animate__animated animate__fadeIn" : ""}
-              >
-                <h1> Hi!  
-                  <span
-                    className="txt-rotate"
-                    dataPeriod="100"
-                    data-rotate='[ " Get ready for your next programming interview with our quiz app!", " Become a programming interview pro with our quiz app", " Are you ready to tackle challenging questions?" ]'
-                  >
-                    <span className="wrap">{text}</span>
-                  </span>
+              <div className={isVisible ? "animate__animated animate__fadeIn" : ""}>
+
+                <span className="tag">✦ Personality Quiz</span>
+
+                <h1>
+                  Discover Your<br />
+                  <span className="gradient-text">Zodiac Personality</span>
                 </h1>
 
-                <ul>
-                <li>You will be asked 20 questions.</li>
-                <li>10 points for the correct answer.</li>
-                <li>
-                  Each question has 3 options. Only one is correct.
-                </li>
-                <li>
-                  You can review and change answers before the quiz finishes.
-                </li>
+                <p className="tagline">
+                  <span className="wrap">{text || " "}</span>
+                </p>
 
+                <ul className="steps">
+                  <li>Answer 12 personality questions honestly</li>
+                  <li>Choose from 4 options — no right or wrong answers</li>
+                  <li>Discover if you are Fire ♈, Earth ♉, Air ♊, or Water ♋</li>
                 </ul>
+
                 <input
                   ref={inputRef}
                   className="userid"
                   type="text"
-                  placeholder="Username *"
+                  placeholder="Enter your name to begin…"
                 />
+
                 <Link className="button" to="/quiz" onClick={startQuiz}>
-                  Start Quiz <ArrowRightCircle size={25} />
+                  Start Quiz <ArrowRightCircle size={18} />
                 </Link>
+
               </div>
             )}
           </TrackVisibility>
         </div>
 
-        <div>
+        {/* ── Right: illustration ── */}
+        <div className="col-visual">
           <TrackVisibility>
             {({ isVisible }) => (
-              <div
-                className={isVisible ? "animate__animated animate__zoomIn" : ""}
-              >
-                <img src={headerImg} alt="Header Img" />
+              <div className={isVisible ? "animate__animated animate__zoomIn" : ""}>
+                <img src={headerImg} alt="Zodiac illustration" />
               </div>
             )}
           </TrackVisibility>
         </div>
+
       </div>
     </div>
   );

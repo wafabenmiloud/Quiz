@@ -1,38 +1,28 @@
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux";
-import { getServerData } from "../helper/helper";
+import { questions, answers } from "../data/questions";
 
 /** redux actions */
 import * as Action from '../redux/question_reducer'
 
-/** fetch question hook to fetch api data and set value to store */
+/** load questions from local data */
 export const useFetchQestion = () => {
-    const dispatch = useDispatch();   
+    const dispatch = useDispatch();
     const [getData, setGetData] = useState({ isLoading : false, apiData : [], serverError: null});
 
     useEffect(() => {
         setGetData(prev => ({...prev, isLoading : true}));
 
-        /** async function fetch backend data */
-        (async () => {
-            try {
-                const [{ questions, answers }] = await getServerData('https://quiz-a9am.onrender.com/api/questions', (data) => data)
-                
-                if(questions.length > 0){
-                    setGetData(prev => ({...prev, isLoading : false}));
-                    setGetData(prev => ({...prev, apiData : questions}));
-
-                    /** dispatch an action */
-                    dispatch(Action.startExamAction({ question : questions, answers }))
-
-                } else{
-                    throw new Error("No Question Avalibale");
-                }
-            } catch (error) {
-                setGetData(prev => ({...prev, isLoading : false}));
-                setGetData(prev => ({...prev, serverError : error}));
+        try {
+            if (questions.length > 0) {
+                setGetData(prev => ({...prev, isLoading : false, apiData : questions}));
+                dispatch(Action.startExamAction({ question: questions, answers }));
+            } else {
+                throw new Error("No Questions Available");
             }
-        })();
+        } catch (error) {
+            setGetData(prev => ({...prev, isLoading : false, serverError : error}));
+        }
     }, [dispatch]);
 
     return [getData, setGetData];

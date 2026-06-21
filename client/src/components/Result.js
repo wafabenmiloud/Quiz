@@ -1,19 +1,24 @@
 import React from "react";
 import "./Result.css";
 import { Link } from "react-router-dom";
-
-import ResultTable from "./ResultTable";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  attempts_Number,
-  earnPoints_Number,
-  flagResult,
-} from "../helper/helper";
-
-/** import actions  */
+import { attempts_Number, getZodiacResult } from "../helper/helper";
 import { resetAllAction } from "../redux/question_reducer";
 import { resetResultAction } from "../redux/result_reducer";
-import { usePublishResult } from "../hooks/setResult";
+
+const ELEMENT_COLORS = {
+  Fire:  "#ff6b35",
+  Earth: "#6aaa5e",
+  Air:   "#7ec8e3",
+  Water: "#5b8dee",
+};
+
+const ELEMENTS = [
+  { emoji: "🔥", label: "Fire",  idx: 0 },
+  { emoji: "🌿", label: "Earth", idx: 1 },
+  { emoji: "💨", label: "Air",   idx: 2 },
+  { emoji: "🌊", label: "Water", idx: 3 },
+];
 
 export default function Result() {
   const dispatch = useDispatch();
@@ -22,19 +27,10 @@ export default function Result() {
     result: { result, userId },
   } = useSelector((state) => state);
 
-  const totalPoints = queue.length * 10;
-  const attempts = attempts_Number(result);
-  const earnPoints = earnPoints_Number(result, answers, 10);
-  const flag = flagResult(totalPoints, earnPoints);
-
-  /** store user result */
-  usePublishResult({
-    result,
-    username: userId,
-    attempts,
-    points: earnPoints,
-    achived: flag ? "Passed" : "Failed",
-  });
+  const attempts    = attempts_Number(result);
+  const zodiac      = getZodiacResult(result, answers);
+  const accentColor = ELEMENT_COLORS[zodiac.element] || "#c944e8";
+  const maxTally    = Math.max(...zodiac.tally);
 
   function onRestart() {
     dispatch(resetAllAction());
@@ -42,42 +38,65 @@ export default function Result() {
   }
 
   return (
-    <div className="container">
-      <h1 className="title text-light">Quiz Application</h1>
+    <div className="result-page">
+      <div className="result-card">
 
-      <div className="result flex-center">
-        <div className="flex">
-          <span>Username</span>
-          <span className="bold">{userId || ""}</span>
-        </div>
-        <div className="flex">
-          <span>Total Quiz Points : </span>
-          <span className="bold">{totalPoints || 0}</span>
-        </div>
-        <div className="flex">
-          <span>Total Questions : </span>
-          <span className="bold">{queue.length || 0}</span>
+        <div className="result-emoji">{zodiac.emoji}</div>
+
+        <span
+          className="result-badge"
+          style={{
+            color:       accentColor,
+            borderColor: `${accentColor}66`,
+            background:  `${accentColor}18`,
+          }}
+        >
+          {zodiac.element} Sign
+        </span>
+
+        <h2 className="result-sign">{zodiac.sign}</h2>
+
+        <p className="result-traits">{zodiac.traits}</p>
+
+        <div className="result-divider" />
+
+        <div className="result-stats">
+          <div className="result-stat">
+            <span className="stat-label">Hello</span>
+            <span className="stat-value">{userId || "Star"}</span>
+          </div>
+          <div className="result-stat">
+            <span className="stat-label">Answered</span>
+            <span className="stat-value">{attempts} / {queue.length}</span>
+          </div>
+          <div className="result-stat">
+            <span className="stat-label">Compatible</span>
+            <span className="stat-value small">{zodiac.compatible}</span>
+          </div>
         </div>
 
-        <div className="flex">
-          <span>Total Earn Points : </span>
-          <span className="bold">{earnPoints || 0}</span>
+        <div className="result-tally">
+          {ELEMENTS.map(({ emoji, label, idx }) => {
+            const isDominant = zodiac.tally[idx] === maxTally;
+            return (
+              <div
+                key={label}
+                className={`tally-pill${isDominant ? " dominant" : ""}`}
+                style={isDominant ? { background: accentColor } : {}}
+              >
+                {emoji} {label}: {zodiac.tally[idx]}
+              </div>
+            );
+          })}
         </div>
-        <div className="flex">
-          <span>Quiz Result</span>
-          <span
-            style={{ color: `${flag ? "green" : "red"}` }}
-            className="bold"
-          >
-            {flag ? "Passed" : "Failed"}
-          </span>
+
+        <div className="result-cta">
+          <Link className="btn" to="/" onClick={onRestart}>
+            Try Again
+          </Link>
         </div>
+
       </div>
-     <div className="end">
-     <Link className="btn" to={"/"} onClick={onRestart}>
-        Restart
-      </Link>
-     </div>
     </div>
   );
 }
