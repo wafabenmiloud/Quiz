@@ -17,7 +17,9 @@ export default function Questions({ onChecked }) {
     const dispatch   = useDispatch()
 
     useEffect(() => {
-        dispatch(updateResult({ trace, checked }))
+        if (checked !== undefined) {
+            dispatch(updateResult({ trace, checked }))
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [checked])
 
