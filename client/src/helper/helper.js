@@ -2,54 +2,7 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 export function attempts_Number(result){
-    return result.filter(r => r !== undefined).length;
-}
-
-const ZODIAC_SIGNS = {
-  0: {
-    sign: "Aries ♈",
-    element: "Fire",
-    emoji: "🔥",
-    traits: "Bold, passionate, spontaneous, and driven. You lead with your heart and never back down from a challenge.",
-    compatible: "Leo & Sagittarius",
-  },
-  1: {
-    sign: "Taurus ♉",
-    element: "Earth",
-    emoji: "🌿",
-    traits: "Grounded, patient, dependable, and sensual. You find beauty in the simple things and build a life that lasts.",
-    compatible: "Virgo & Capricorn",
-  },
-  2: {
-    sign: "Gemini ♊",
-    element: "Air",
-    emoji: "💨",
-    traits: "Curious, witty, adaptable, and social. You thrive on ideas, conversation, and the thrill of something new.",
-    compatible: "Libra & Aquarius",
-  },
-  3: {
-    sign: "Cancer ♋",
-    element: "Water",
-    emoji: "🌊",
-    traits: "Deeply intuitive, empathetic, nurturing, and loyal. You feel everything intensely and love fiercely.",
-    compatible: "Scorpio & Pisces",
-  },
-};
-
-/**
- * Tallies element scores and returns the dominant zodiac result.
- * answers is a 2D array: answers[questionIndex][optionIndex] → element (0–3)
- */
-export function getZodiacResult(result, answers) {
-    const tally = [0, 0, 0, 0]; // Fire, Earth, Air, Water
-    result.forEach((optionIndex, i) => {
-        if (optionIndex !== undefined && answers[i]) {
-            const element = answers[i][optionIndex];
-            if (element !== undefined) tally[element]++;
-        }
-    });
-    const dominantElement = tally.indexOf(Math.max(...tally));
-    return { ...ZODIAC_SIGNS[dominantElement], tally };
+    return result.filter(r => r !== null && r !== undefined).length;
 }
 
 /** check user auth  */
@@ -58,13 +11,41 @@ export function CheckUserExist({ children }){
     return auth ? children : <Navigate to={'/'} replace={true}></Navigate>
 }
 
-/** post server data (kept for result saving) */
-export async function postServerData(url, result, callback){
+/* ── Server API ─────────────────────────────────────────────── */
+const API_URL = process.env.REACT_APP_API_URL
+    || (process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : '');
+
+/** JSON request to the quiz server; resolves to null when it is unreachable. */
+async function request(path, options) {
+    if (!API_URL) return null;
     try {
-        const { default: axios } = await import('axios');
-        const data = await (await axios.post(url, result))?.data;
-        return callback ? callback(data) : data;
+        const res = await fetch(`${API_URL}/api${path}`, options);
+        const data = await res.json().catch(() => null);
+        return res.ok ? data : { error : data?.error || 'request_failed' };
     } catch {
         return null;
     }
+}
+
+const post = (path, body) => request(path, {
+    method : 'POST',
+    headers : { 'Content-Type' : 'application/json' },
+    body : JSON.stringify(body)
+});
+
+export const saveResult = (result) => post('/result', result);
+
+export const fetchStats = (quizId) => request(`/stats?quizId=${encodeURIComponent(quizId)}`);
+
+export const fetchReading = (payload) => post('/reading', payload);
+
+/* ── Last zodiac result (for the daily horoscope) ───────────── */
+const LAST_ZODIAC_KEY = 'quiz-last-zodiac';
+
+export function rememberZodiac(entry) {
+    try { localStorage.setItem(LAST_ZODIAC_KEY, JSON.stringify(entry)); } catch { /* ignore */ }
+}
+
+export function lastZodiac() {
+    try { return JSON.parse(localStorage.getItem(LAST_ZODIAC_KEY)); } catch { return null; }
 }

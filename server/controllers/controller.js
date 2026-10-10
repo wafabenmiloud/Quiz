@@ -3,13 +3,17 @@ const {Result} = require("../models/resultSchema");
 const { answers } = require("../database/data");
 const {questions} = require("../database/data");
 
+/** ids are short lowercase slugs — also keeps query operators out of filters */
+const SLUG = /^[a-z0-9-]{1,40}$/;
+const isSlug = (value) => typeof value === 'string' && SLUG.test(value);
+
 /** get all questions */
 const getQuestions = async (req, res) => {
   try {
     const q = await Question.find();
     res.json(q);
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -19,7 +23,7 @@ const insertQuestions = async (req, res) => {
     const result = await  Question.insertMany({ questions, answers });
       res.json({ msg: "Data Saved Successfully...!", data: result });
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -29,39 +33,34 @@ const dropQuestions = async (req, res) => {
     await Question.deleteMany();
     res.json({ msg: "Questions Deleted Successfully...!" });
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
 /** get all result */
 const getResult = async (req, res) => {
   try {
-    const r = await Result.find();
+    const r = await Result.find().sort({ createdAt: -1 }).limit(500);
     res.json(r);
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
-/** post all result */
+/** store one finished quiz */
 const storeResult = async (req, res) => {
   try {
-    const { username, result, attempts, points, achieved } = req.body;
-    if (!username || !result) {
-      throw new Error("Data not provided");
+    const { username, quizId, outcome, group } = req.body || {};
+    if (typeof username !== 'string' || !username.trim() || !isSlug(quizId) || !isSlug(outcome) || !isSlug(group)) {
+      return res.status(400).json({ error: "bad_request" });
     }
 
-    const savedResult = await Result.create({
-      username,
-      result,
-      attempts,
-      points,
-      achieved,
+    await Result.create({
+      username: username.trim().slice(0, 40),
+      quizId,
+      outcome,
+      group,
     });
-
-    if (!savedResult) {
-      throw new Error("Could not save result");
-    }
 
     res.json({ message: "Result saved successfully" });
   } catch (error) {
@@ -69,9 +68,30 @@ const storeResult = async (req, res) => {
   }
 };
 
-module.exports = { storeResult };
+/** aggregated, anonymous counts for one quiz: { total, outcomes, groups } */
+const getStats = async (req, res) => {
+  try {
+    const { quizId } = req.query;
+    if (!isSlug(quizId)) {
+      return res.status(400).json({ error: "bad_request" });
+    }
 
+    const rows = await Result.aggregate([
+      { $match: { quizId } },
+      { $group: { _id: { outcome: "$outcome", group: "$group" }, count: { $sum: 1 } } },
+    ]);
 
+    const stats = { total: 0, outcomes: {}, groups: {} };
+    rows.forEach(({ _id, count }) => {
+      stats.total += count;
+      stats.outcomes[_id.outcome] = (stats.outcomes[_id.outcome] || 0) + count;
+      stats.groups[_id.group] = (stats.groups[_id.group] || 0) + count;
+    });
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 /** delete all result */
 const dropResult = async (req, res) => {
@@ -79,7 +99,7 @@ const dropResult = async (req, res) => {
     await Result.deleteMany();
     res.json({ msg: "Result Deleted Successfully...!" });
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -89,5 +109,6 @@ module.exports = {
   dropQuestions,
   getResult,
   storeResult,
+  getStats,
   dropResult,
 };

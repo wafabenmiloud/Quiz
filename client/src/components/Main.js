@@ -1,61 +1,89 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { setUserId } from "../redux/result_reducer";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { setUser } from "../redux/result_reducer";
+import { startQuizAction } from "../redux/question_reducer";
 import "./Main.css";
 import TrackVisibility from "react-on-screen";
 import { ArrowRightCircle } from "react-bootstrap-icons";
 import headerImg from "../assets/bg.svg";
+import { SECTIONS, DEFAULT_QUIZ_ID, getQuiz } from "../data/quizzes";
+import { shuffledOrder, isAnswered } from "../quiz/engine";
 
-export default function Main() {
+const PERIOD = 1800;
+
+/** Types and deletes each phrase in turn. */
+function useTypewriter(phrases) {
   const [loopNum, setLoopNum] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [text, setText] = useState("");
   const [delta, setDelta] = useState(300 - Math.random() * 100);
-  const toRotate = [
-    "Fire, Earth, Air, or Water?",
-    "12 questions. One cosmic truth.",
-    "Discover your elemental identity.",
-  ];
-  const period = 1800;
 
   useEffect(() => {
-    let ticker = setInterval(() => { tick(); }, delta);
-    return () => { clearInterval(ticker); };
+    setText("");
+    setIsDeleting(false);
+    setLoopNum(0);
+    setDelta(200);
+  }, [phrases]);
+
+  useEffect(() => {
+    const ticker = setTimeout(() => {
+      const fullText = phrases[loopNum % phrases.length];
+      const updatedText = isDeleting
+        ? fullText.substring(0, text.length - 1)
+        : fullText.substring(0, text.length + 1);
+
+      setText(updatedText);
+
+      if (isDeleting) {
+        setDelta(prev => Math.max(30, prev / 2));
+      }
+
+      if (!isDeleting && updatedText === fullText) {
+        setIsDeleting(true);
+        setDelta(PERIOD);
+      } else if (isDeleting && updatedText === "") {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+        setDelta(120);
+      } else if (!isDeleting) {
+        setDelta(70 + Math.random() * 60);
+      }
+    }, delta);
+    return () => clearTimeout(ticker);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text]);
+  }, [text, isDeleting, phrases]);
 
-  const tick = () => {
-    let i = loopNum % toRotate.length;
-    let fullText = toRotate[i];
-    let updatedText = isDeleting
-      ? fullText.substring(0, text.length - 1)
-      : fullText.substring(0, text.length + 1);
+  return text;
+}
 
-    setText(updatedText);
-
-    if (isDeleting) {
-      setDelta(prev => prev / 2);
-    }
-
-    if (!isDeleting && updatedText === fullText) {
-      setIsDeleting(true);
-      setDelta(period);
-    } else if (isDeleting && updatedText === "") {
-      setIsDeleting(false);
-      setLoopNum(loopNum + 1);
-      setDelta(500);
-    }
-  };
-
-  const inputRef = useRef();
+export default function Main() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userId, birthday: savedBirthday, challenger, result } = useSelector(state => state.result);
+  const { quizId: activeQuizId, trace } = useSelector(state => state.questions);
 
-  function startQuiz() {
-    const userId = inputRef.current.value;
-    if (userId) {
-      dispatch(setUserId(userId));
+  const [quizId, setQuizId] = useState(challenger?.quizId || DEFAULT_QUIZ_ID);
+  const [name, setName] = useState(userId || "");
+  const [birthday, setBirthday] = useState(savedBirthday || "");
+  const [error, setError] = useState("");
+
+  const quiz = getQuiz(quizId);
+  const text = useTypewriter(quiz.typewriter);
+
+  const activeQuiz = getQuiz(activeQuizId);
+  const canResume = activeQuiz && userId && result.some(isAnswered) && trace < activeQuiz.questions.length;
+
+  function startQuiz(e) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setError("Please enter your name to begin.");
+      return;
     }
+    dispatch(setUser({ userId: trimmed, birthday }));
+    dispatch(startQuizAction({ quizId: quiz.id, order: shuffledOrder(quiz) }));
+    navigate("/quiz");
   }
 
   return (
@@ -64,37 +92,67 @@ export default function Main() {
 
         {/* ── Left: content ── */}
         <div>
-          <TrackVisibility>
+          <TrackVisibility once>
             {({ isVisible }) => (
               <div className={isVisible ? "animate__animated animate__fadeIn" : ""}>
+
+                {challenger && (
+                  <p className="challenge-banner">
+                    🔮 <strong>{challenger.name}</strong> got <strong>{challenger.title}</strong>.
+                    {" "}Take the quiz to see how you compare.
+                  </p>
+                )}
 
                 <span className="tag">✦ Personality Quiz</span>
 
                 <h1>
-                  Discover Your<br />
-                  <span className="gradient-text">Zodiac Personality</span>
+                  {quiz.heading[0]}<br />
+                  <span className="gradient-text">{quiz.heading[1]}</span>
                 </h1>
 
                 <p className="tagline">
-                  <span className="wrap">{text || " "}</span>
+                  <span className="wrap">{text || " "}</span>
                 </p>
 
                 <ul className="steps">
-                  <li>Answer 12 personality questions honestly</li>
-                  <li>Choose from 4 options — no right or wrong answers</li>
-                  <li>Discover if you are Fire ♈, Earth ♉, Air ♊, or Water ♋</li>
+                  {quiz.steps.map((step) => <li key={step}>{step}</li>)}
                 </ul>
 
-                <input
-                  ref={inputRef}
-                  className="userid"
-                  type="text"
-                  placeholder="Enter your name to begin…"
-                />
+                <form onSubmit={startQuiz} noValidate>
+                  <input
+                    className={`userid${error ? " invalid" : ""}`}
+                    type="text"
+                    value={name}
+                    maxLength={40}
+                    aria-label="Your name"
+                    aria-invalid={Boolean(error)}
+                    onChange={(e) => { setName(e.target.value); setError(""); }}
+                    placeholder="Enter your name to begin…"
+                  />
+                  {error && <p className="field-error" role="alert">{error}</p>}
 
-                <Link className="button" to="/quiz" onClick={startQuiz}>
-                  Start Quiz <ArrowRightCircle size={18} />
-                </Link>
+                  {quiz.id === "zodiac" && (
+                    <label className="birthday">
+                      <span>Birthday (optional) — compare your birth sign with your personality sign</span>
+                      <input
+                        className="userid"
+                        type="date"
+                        value={birthday}
+                        max={new Date().toISOString().slice(0, 10)}
+                        onChange={(e) => setBirthday(e.target.value)}
+                      />
+                    </label>
+                  )}
+
+                  <button className="button" type="submit">
+                    Start Quiz <ArrowRightCircle size={18} />
+                  </button>
+                </form>
+
+                <p className="home-links">
+                  {canResume && <Link to="/quiz">↩ Resume {activeQuiz.title}</Link>}
+                  <Link to="/today">☀ Today's horoscope</Link>
+                </p>
 
               </div>
             )}
@@ -103,7 +161,7 @@ export default function Main() {
 
         {/* ── Right: illustration ── */}
         <div className="col-visual">
-          <TrackVisibility>
+          <TrackVisibility once>
             {({ isVisible }) => (
               <div className={isVisible ? "animate__animated animate__zoomIn" : ""}>
                 <img src={headerImg} alt="Zodiac illustration" />
@@ -112,6 +170,32 @@ export default function Main() {
           </TrackVisibility>
         </div>
 
+      </div>
+
+      {/* ── Quiz catalogue ── */}
+      <div className="catalogue">
+        {SECTIONS.map((section) => (
+        <section key={section.title}>
+        <h2>{section.title}</h2>
+        <div className="catalogue-grid" role="radiogroup" aria-label={section.title}>
+          {section.quizzes.map((q) => (
+            <button
+              key={q.id}
+              type="button"
+              role="radio"
+              aria-checked={q.id === quizId}
+              className={`quiz-card${q.id === quizId ? " active" : ""}`}
+              onClick={() => { setQuizId(q.id); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            >
+              <span className="quiz-card-emoji">{q.emoji}</span>
+              <span className="quiz-card-title">{q.title}</span>
+              <span className="quiz-card-blurb">{q.blurb}</span>
+              <span className="quiz-card-meta">{q.questions.length} questions</span>
+            </button>
+          ))}
+        </div>
+        </section>
+        ))}
       </div>
     </div>
   );

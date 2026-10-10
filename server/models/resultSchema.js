@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 
-/** result model */
+/** result model — one document per finished quiz */
 const resultModel = new mongoose.Schema({
     username : { type : String },
-    result : { type : Array, default : []},
-    attempts : { type : Number, default : 0},
-    points : { type : Number, default : 0},
-    achived : { type : String, default : ''},
+    quizId : { type : String, index : true },
+    outcome : { type : String },   /** e.g. "leo" */
+    group : { type : String },     /** e.g. "fire"; same as outcome when a quiz has no groups */
     createdAt : { type : Date, default : Date.now}
 })
 const Result = mongoose.model("results", resultModel);

@@ -9,15 +9,17 @@ const express = require('express');
 const Connection = require ('./database/conn');
 const app = express()
 
-/** app middlewares */
-app.use(morgan('tiny'));
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://quiz-p9dl.onrender.com');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  });
+/** browsers allowed to call the API — comma-separated list in CLIENT_ORIGIN */
+const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:3000,https://quiz-p9dl.onrender.com')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
-  app.use(express.json());
+/** app middlewares */
+app.set('trust proxy', 1); /** behind Render's proxy, so req.ip is the real client */
+app.use(morgan('tiny'));
+app.use(cors({ origin: allowedOrigins }));
+app.use(express.json({ limit: '20kb' }));
 
 
 /** appliation port */
@@ -42,5 +44,3 @@ Connection(mongoURI);
 
 //server
 app.listen(PORT, () => console.log(`Server is running successfully on PORT ${PORT}`));
-
-

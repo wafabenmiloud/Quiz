@@ -1,3 +1,26 @@
+# Cosmic Quiz
+
+Personality quizzes (zodiac, love language, tarot) built with React + Redux, with an Express/MongoDB server for live stats and AI-written readings.
+
+## Running it
+
+```bash
+cd client && npm install && npm start      # http://localhost:3000
+cd server && npm install && npm start      # http://localhost:8080
+```
+
+The client works on its own. The server adds live stats (needs `MONGODB_URI`) and the AI reading (needs `ANTHROPIC_API_KEY`). Copy `server/.env.example` to `server/.env` and `client/.env.example` to `client/.env.local` and fill them in.
+
+## Adding a quiz
+
+Create a file in `client/src/data/quizzes/` (copy `tarot.js`) and add it to the list in `client/src/data/quizzes/index.js`. Question types: `choice`, `image`, `versus` and `slider`.
+
+## Admin routes
+
+Listing or deleting results, and seeding or deleting questions, require the `ADMIN_TOKEN` from `server/.env` in an `x-admin-token` header.
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

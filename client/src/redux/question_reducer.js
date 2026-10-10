@@ -1,44 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+    quizId : null,
+    order : [],   /** order[i] → shuffled option indexes for question i */
+    trace : 0
+}
+
 /** create reducer */
 export const questionReducer = createSlice({
     name: 'questions',
-    initialState : {
-        queue: [],
-        answers : [],
-        trace : 0
-    },
+    initialState,
     reducers : {
-        startExamAction : (state, action) => {
-            let { question, answers} = action.payload
-            return {
-                ...state,
-                queue : question,
-                answers
-            }
+        startQuizAction : (state, action) => {
+            const { quizId, order } = action.payload
+            return { quizId, order, trace : 0 }
         },
         moveNextAction : (state) => {
-            return {
-                ...state,
-                trace : state.trace + 1
-            }
+            state.trace += 1
         },
         movePrevAction : (state) => {
-            return {
-                ...state,
-                trace : state.trace - 1
-            }
+            state.trace = Math.max(0, state.trace - 1)
         },
-        resetAllAction : () => {
-            return {
-                queue: [],
-                answers : [],
-                trace : 0
-            }
-        }
+        resetAllAction : () => initialState
     }
 })
 
-export const { startExamAction, moveNextAction, movePrevAction, resetAllAction } = questionReducer.actions;
+export const { startQuizAction, moveNextAction, movePrevAction, resetAllAction } = questionReducer.actions;
 
 export default questionReducer.reducer;

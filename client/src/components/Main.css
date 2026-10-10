@@ -4,7 +4,9 @@
 .main {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4rem;
   padding: 5rem 2rem 3rem;
 }
 
@@ -137,12 +139,12 @@
   transition:
     transform    var(--dur) var(--ease),
     box-shadow   var(--dur) var(--ease);
-  box-shadow: 0 4px 20px rgba(201,68,232,0.38);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 38%, transparent);
 }
 
 .main .button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(201,68,232,0.55);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .main .button:active { transform: translateY(0); }
@@ -168,7 +170,7 @@
   width: 70%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201,68,232,0.24) 0%, transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 24%, transparent) 0%, transparent 70%);
   filter: blur(50px);
   pointer-events: none;
 }
@@ -185,6 +187,117 @@
   50%       { transform: translateY(14px);  }
 }
 
+/* ── Form extras ─────────────────────────────── */
+.main .userid.invalid {
+  border-color: #f87171;
+  animation: shake 0.3s var(--ease);
+}
+
+@keyframes shake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.main .field-error {
+  font-size: 0.8rem;
+  color: #f87171;
+  margin: -4px 0 12px 20px;
+}
+
+.main .birthday {
+  display: block;
+  max-width: 360px;
+  margin-bottom: 6px;
+}
+
+.main .birthday span {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-2);
+  margin: 4px 0 8px 4px;
+  line-height: 1.4;
+}
+
+.main .birthday input { color-scheme: dark; }
+
+.main .button { cursor: pointer; }
+
+.main .home-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+}
+
+.main .home-links a { color: var(--text-2); transition: color var(--dur) var(--ease); }
+.main .home-links a:hover { color: var(--accent); }
+
+.main .challenge-banner {
+  max-width: 420px;
+  padding: 12px 16px;
+  margin-bottom: 1.4rem;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-md);
+  background: var(--accent-dim);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-1);
+}
+
+/* ── Quiz catalogue ──────────────────────────── */
+.catalogue {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.catalogue section + section { margin-top: 2rem; }
+
+.catalogue h2 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 1rem;
+}
+
+.catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.quiz-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 20px;
+  text-align: left;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  transition:
+    background    var(--dur) var(--ease),
+    border-color  var(--dur) var(--ease),
+    transform     var(--dur) var(--ease);
+}
+
+.quiz-card:hover { background: var(--surface-hover); transform: translateY(-3px); }
+
+.quiz-card.active {
+  background: var(--surface-active);
+  border-color: var(--border-accent);
+}
+
+.quiz-card-emoji { font-size: 28px; line-height: 1; margin-bottom: 4px; }
+.quiz-card-title { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+.quiz-card-blurb { font-size: 0.82rem; color: var(--text-2); line-height: 1.5; }
+.quiz-card-meta  { font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-3); margin-top: 4px; }
+.quiz-card.active .quiz-card-meta { color: var(--accent); }
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 900px) {
   .main .row {
@@ -196,6 +309,10 @@
   .main .steps li    { justify-content: center; }
   .main .userid      { max-width: 100%; }
   .main .button      { margin: 0 auto; }
+  .main .birthday    { max-width: 100%; }
+  .main .field-error { margin-left: 0; }
+  .main .home-links  { justify-content: center; }
+  .main .challenge-banner { margin-left: auto; margin-right: auto; }
   .main .col-visual  { order: -1; }
   .main .col-visual::before { width: 45%; }
   .main img          { width: 50%; margin: 0 auto; }
