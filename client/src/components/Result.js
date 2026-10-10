@@ -10,7 +10,10 @@ import { birthSign, compatibility, ELEMENTS } from "../data/quizzes/zodiac";
 import { isAnswered, scoreQuiz, SLIDER_LABELS } from "../quiz/engine";
 import { useTheme } from "../hooks/useTheme";
 import RadarChart from "./RadarChart";
-import {  Reveal, ShareActions, Stats } from "./ResultExtras";
+import { Reading, Reveal, ShareActions, Stats } from "./ResultExtras";
+
+/** the AI reading costs money per use, so it stays off unless switched on at build time */
+const AI_READING = process.env.REACT_APP_AI_READING === "true";
 
 export default function Result() {
   const dispatch = useDispatch();
@@ -168,7 +171,7 @@ export default function Result() {
 
         <Stats quizId={quiz.id} outcome={outcome} refreshKey={saved} />
 
-       {/* <Reading payload={readingPayload} />*/} 
+        {AI_READING && <Reading payload={readingPayload} />}
 
         <ShareActions quiz={quiz} name={userId} outcome={outcome} scores={scores} last={last} />
 

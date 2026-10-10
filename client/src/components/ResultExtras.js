@@ -73,11 +73,13 @@ export function Stats({ quizId, outcome, refreshKey }) {
   );
 }
 
-/* ── AI reading ─────────────────────────────────────────────── 
+/* ── AI reading ─────────────────────────────────────────────── */
 const READING_ERRORS = {
   not_configured: "The oracle isn't set up on this server yet.",
   rate_limited: "The oracle needs a short rest. Try again in a few minutes.",
 };
+
+/** Personalised paragraph written from the user's actual answers. */
 export function Reading({ payload }) {
   const [state, setState] = useState({ status: "idle", text: "" });
 
@@ -111,7 +113,6 @@ export function Reading({ payload }) {
     </div>
   );
 }
-/** Personalised paragraph written from the user's actual answers. */
 
 
 /* ── Share ──────────────────────────────────────────────────── */
